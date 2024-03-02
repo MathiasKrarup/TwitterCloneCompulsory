@@ -7,10 +7,11 @@ namespace TwitterCloneCompulsory.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthenticationRepo _authRepo;
+    private readonly ITokenService _tokenService;
 
-    public AuthController(IAuthenticationRepo authRepo)
+    public AuthController(ITokenService tokenService)
     {
-        _authRepo = authRepo;
+        _tokenService = tokenService;
     }
+    
 }

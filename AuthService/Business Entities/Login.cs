@@ -4,21 +4,10 @@ namespace TwitterCloneCompulsory.Business_Entities;
 
 public class Login
 {
-    // Primary Key, foreign key reference to the User entity.
-    /// <summary>
-    /// Primary key
-    /// </summary>
-    public int UserId { get; set; }
-    
-    /// <summary>
-    /// The valid JWT token for the logged in user
-    /// </summary>
-    public string Token { get; set; }
-    
-    /// <summary>
-    /// The expiry time of the JWT Token
-    /// </summary>
+    public int LoginId { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
     public DateTime TokenExpiryTime { get; set; }
-    
-    public User User { get; set; }
+    public int AuthUserId { get; set; } // Foreign key to the AuthUser
+    public AuthUser AuthUser { get; set; } 
 }
