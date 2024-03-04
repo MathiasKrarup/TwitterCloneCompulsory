@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  Auth-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      MSSQL_SA_PASSWORD: "SuperSecret7!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  authservice:
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+    ports:
+      - "80:443"
+      - "81:444"
+    depends_on:
+      - Auth-db
+
+volumes:
+  mssql-data:

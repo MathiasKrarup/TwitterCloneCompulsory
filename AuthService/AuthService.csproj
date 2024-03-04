@@ -4,13 +4,14 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>TwitterCloneCompulsory</RootNamespace>
       <UserSecretsId>8ee939d8-f829-4484-bb5d-ef33b1e4ec56</UserSecretsId>
   </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.*" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.27" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.*" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.4.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -18,13 +19,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+      <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain.csproj" />
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

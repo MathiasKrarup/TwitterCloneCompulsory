@@ -23,6 +23,7 @@ public class AuthenticationContext : DbContext
         modelBuilder.Entity<Login>(entity =>
         {
             entity.HasKey(e => e.LoginId);
+            entity.Property(e => e.LoginId).ValueGeneratedNever();
             entity.Property(e => e.Email).IsRequired();
             entity.Property(e => e.Password).IsRequired();
             entity.Property(e => e.TokenExpiryTime).IsRequired();
@@ -41,4 +42,10 @@ public class AuthenticationContext : DbContext
                 .HasForeignKey(e => e.AuthUserId);
         });
     }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Server=Auth-db;Database=Auth;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;");
+    }
+    
 }
