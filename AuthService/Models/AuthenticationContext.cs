@@ -12,6 +12,12 @@ public class AuthenticationContext : DbContext
     public DbSet<Login> Logins { get; set; }
     public DbSet<Token> Tokens { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(
+            "Server=Auth-db,1443;Database=Auth;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;");
+    }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AuthUser>(entity =>
@@ -42,10 +48,6 @@ public class AuthenticationContext : DbContext
                 .HasForeignKey(e => e.AuthUserId);
         });
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(
-            "Server=Auth-db;Database=Auth;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;");
-    }
+
     
 }

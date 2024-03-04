@@ -63,4 +63,10 @@ public class ValidationService : IValidationService
         return tokenHandler.WriteToken(token);
 
     }
+
+    public void Rebuild()
+    {
+        _authRepo.Rebuild();
+    }
+    
 }

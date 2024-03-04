@@ -1,6 +1,15 @@
+using TwitterCloneCompulsory.Interfaces;
+using TwitterCloneCompulsory.Models;
+using TwitterCloneCompulsory.Repo;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<AuthenticationContext>();
+builder.Services.AddScoped<IAuthRepo, AuthRepo>();
+builder.Services.AddScoped<IValidationService, ValidationService>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

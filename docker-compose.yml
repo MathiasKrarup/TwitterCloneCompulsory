@@ -16,8 +16,8 @@ services:
       context: .
       dockerfile: AuthService/Dockerfile
     ports:
-      - "80:443"
-      - "81:444"
+      - "8080:80"
+      - "8081:8081"
     depends_on:
       - Auth-db
 

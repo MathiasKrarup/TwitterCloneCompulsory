@@ -6,5 +6,6 @@ namespace TwitterCloneCompulsory.Interfaces;
     public interface IAuthRepo
     {
         Task<Login> GetUsersByUsernameAsync(string username);
+        public void Rebuild();
 
     }

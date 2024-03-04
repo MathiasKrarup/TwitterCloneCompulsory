@@ -32,5 +32,11 @@ public class AuthRepo : IAuthRepo
             throw new Exception("There was an error getting the user by their username: " + exception.Message);
         }
     }
+
+    public void Rebuild()
+    {
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
+    }
     
 }

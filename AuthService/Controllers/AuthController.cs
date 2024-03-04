@@ -38,4 +38,11 @@ public class AuthController : ControllerBase
         return Ok(new { Token = token });
     }
 
+    [HttpGet]
+    [Route("rebuild")]
+    public IActionResult Rebuild()
+    {
+            _authRepo.Rebuild();
+            return Ok();
+    }
 }
