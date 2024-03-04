@@ -5,6 +5,6 @@ namespace TwitterCloneCompulsory.Interfaces;
 
     public interface IAuthRepo
     {
-        Task<User> GetUserByEmailAsync(string email);
-        Task<bool> ValidateUserCredentialsAsync(string email, string password);
+        Task<Login> GetUsersByUsernameAsync(string username);
+
     }

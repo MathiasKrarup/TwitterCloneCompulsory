@@ -8,7 +8,7 @@ public class AuthenticationContext : DbContext
 {
     public AuthenticationContext(DbContextOptions<AuthenticationContext> options) : base(options) { }
     
-    public DbSet<AuthUser> AuthUsers { get; set; } // Use AuthUser here
+    public DbSet<AuthUser> AuthUsers { get; set; } 
     public DbSet<Login> Logins { get; set; }
     public DbSet<Token> Tokens { get; set; }
 
