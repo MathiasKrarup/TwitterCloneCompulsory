@@ -15,7 +15,7 @@ public class AuthenticationContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(
-            "Server=Auth-db,1443;Database=Auth;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;");
+            "Server=Auth-db;Database=Auth;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;");
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
