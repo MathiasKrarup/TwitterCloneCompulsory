@@ -16,6 +16,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+UserApplication.DependencyResolver.DependencyResolverService.RegisterServices(builder.Services);
+UserInfrastructure.DependencyResolverService.DependencyResolverService.RegisterServices(builder.Services);
+
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

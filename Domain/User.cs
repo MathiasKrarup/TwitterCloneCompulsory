@@ -16,6 +16,11 @@ public class User
     /// The username of the user
     /// </summary>
     public string Username { get; set; }
+    
+    /// <summary>
+    /// The hashed password of the user
+    /// </summary>
+    public string PasswordHash { get; set; }
 
     /// <summary>
     /// The data the user is created
