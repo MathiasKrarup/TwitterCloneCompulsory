@@ -1,5 +1,7 @@
-﻿using Domain;
+﻿using System.Security.Claims;
+using Domain;
 using Domain.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using UserApplication.Interfaces;
@@ -42,11 +44,23 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto updateUserDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
+        }
+
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        if (!int.TryParse(userIdClaim, out var userIdFromToken))
+        {
+            return Unauthorized("invalid token");
+        }
+
+        if (id != userIdFromToken)
+        {
+            return Forbid("You do not have permission to update this user");
         }
 
         updateUserDto.Id = id;
@@ -55,16 +69,22 @@ public class UserController : ControllerBase
 
         return NoContent();
     }
-
-    [HttpDelete("id")]
+    
+    [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        var user = await _userCrud.GetUserAsync(id);
-        if (user == null)
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        if (!int.TryParse(userIdClaim, out var userIdFromToken))
         {
-            return NotFound();
+            return Unauthorized("Invalid token");
         }
 
+        if (id != userIdFromToken)
+        {
+            return Forbid("You do not have permission to delete this user");
+        }
+        
         await _userCrud.DeleteUserAsync(id);
 
         return NoContent();
