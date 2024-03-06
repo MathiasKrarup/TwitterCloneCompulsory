@@ -23,5 +23,25 @@ services:
     depends_on:
       - Auth-db
 
+  User-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      MSSQL_SA_PASSWORD: "YourUserDBPassword"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1434:1433"
+    volumes:
+      - user-mssql-data:/var/opt/mssql
+
+  userservice:
+    build:
+      context: .
+      dockerfile: UserService/Dockerfile
+    ports:
+      - "8090:80"
+      - "8091:443"
+    depends_on:
+      - User-db
+
 volumes:
   mssql-data:
