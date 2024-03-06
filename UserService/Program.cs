@@ -1,6 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using UserInfrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddDbContext<UserDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("UserDbConnection")));
+
+
+UserApplication.DependencyResolver.DependencyResolverService.RegisterServices(builder.Services);
+UserInfrastructure.DependencyResolverService.DependencyResolverService.RegisterServices(builder.Services);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,8 +41,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-UserApplication.DependencyResolver.DependencyResolverService.RegisterServices(builder.Services);
-UserInfrastructure.DependencyResolverService.DependencyResolverService.RegisterServices(builder.Services);
+
 
 
 app.UseHttpsRedirection();
