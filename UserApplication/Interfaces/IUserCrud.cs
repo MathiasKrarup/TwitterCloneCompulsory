@@ -9,5 +9,6 @@ public interface IUserCrud
     Task DeleteUserAsync(int userId);
     Task<User> GetUserAsync(int userId);
     Task UpdateUserAsync(UpdateUserDto updateUserDto);
+    Task<User> GetUserByUsername(string username);
     public void Rebuild();
 }

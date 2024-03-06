@@ -56,4 +56,9 @@ public class UserCrud : IUserCrud
 
         await _userRepo.UpdateUserAsync(user);
     }
+
+    public async Task<User> GetUserByUsername(string username)
+    {
+        return await _userRepo.GetUserByUsernameAsync(username);
+    }
 }

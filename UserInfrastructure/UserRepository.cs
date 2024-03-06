@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Microsoft.EntityFrameworkCore;
 using UserInfrastructure.Interfaces;
 
 namespace UserInfrastructure;
@@ -38,6 +39,11 @@ public class UserRepository : IUserRepo
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<User> GetUserByUsernameAsync(string username)
+    {
+        return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
     }
 
     public void Rebuild()

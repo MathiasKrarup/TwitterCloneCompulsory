@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+using Domain;
 using Domain.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using TwitterCloneCompulsory.Business_Entities;
 using TwitterCloneCompulsory.Interfaces;
 
@@ -14,11 +17,14 @@ public class AuthController : ControllerBase
 {
     private readonly IValidationService _validationService;
     private readonly IAuthRepo _authRepo;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly string _userServiceUrl;
 
-    public AuthController(IValidationService validationService, IAuthRepo authRepo)
+    public AuthController(IValidationService validationService, IAuthRepo authRepo, IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
         _validationService = validationService;
         _authRepo = authRepo;
+        _httpClientFactory = httpClientFactory;
     }
 
     [HttpPost("login")]
@@ -52,15 +58,25 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
-        if (!ModelState.IsValid)
+        var httpClient = _httpClientFactory.CreateClient();
+
+        var userServiceUrl = "placeholder";
+
+        var response = await httpClient.GetAsync($"{userServiceUrl}/getByUsername/{registerDto.Username}");
+
+        if (!response.IsSuccessStatusCode)
         {
-            return BadRequest(ModelState);
+            return BadRequest("User does not exist");
         }
 
-        var existingLogin = await _authRepo.GetUsersByUserId(registerDto.UserId);
+        
+        var userContent = await response.Content.ReadAsStringAsync();
+        var user = JsonConvert.DeserializeObject<User>(userContent);
+
+        var existingLogin = await _authRepo.GetUsersByUsernameAsync(registerDto.Username);
         if (existingLogin != null)
         {
-            return BadRequest("a login for this user already exists.");
+            return BadRequest("A login for this user already exists");
         }
 
         var passwordHasher = new PasswordHasher<Login>();
@@ -68,13 +84,13 @@ public class AuthController : ControllerBase
 
         var login = new Login
         {
-            UserId = registerDto.UserId,
+            UserId = user.Id,
             UserName = registerDto.Username,
             PasswordHash = hashedPassword
         };
 
         await _authRepo.RegisterUserAsync(login);
-
-        return Ok(new { message = "User registered succesfully" });
+        
+        return Ok(new { message = "User registered successfully." });
     }
 }

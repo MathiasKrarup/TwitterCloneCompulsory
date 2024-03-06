@@ -97,4 +97,16 @@ public class UserController : ControllerBase
         _userCrud.Rebuild();
         return Ok();
     }
+
+    [HttpGet("getByUserName/{username}")]
+    public async Task<ActionResult<User>> GetUserByUsername(string username)
+    {
+        var user = await _userCrud.GetUserByUsername(username);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        return user;
+    }
 }
