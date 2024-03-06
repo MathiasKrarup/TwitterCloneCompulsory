@@ -89,4 +89,12 @@ public class UserController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet]
+    [Route("rebuild")]
+    public IActionResult Rebuild()
+    {
+        _userCrud.Rebuild();
+        return Ok();
+    }
 }

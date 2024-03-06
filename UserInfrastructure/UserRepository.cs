@@ -39,4 +39,10 @@ public class UserRepository : IUserRepo
             await _context.SaveChangesAsync();
         }
     }
+
+    public void Rebuild()
+    {
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
+    }
 }

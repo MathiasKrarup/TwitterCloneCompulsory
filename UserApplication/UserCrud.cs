@@ -39,6 +39,11 @@ public class UserCrud : IUserCrud
         return await _userRepo.GetUserAsync(userId);
     }
 
+    public void Rebuild()
+    {
+        _userRepo.Rebuild();
+    }
+
     public async Task UpdateUserAsync(UpdateUserDto updateUserDto)
     {
         var user = await _userRepo.GetUserAsync(updateUserDto.Id);

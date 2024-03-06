@@ -25,8 +25,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddDbContext<UserDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("UserDbConnection")));
+builder.Services.AddDbContext<UserDbContext>();
 
 
 UserApplication.DependencyResolver.DependencyResolverService.RegisterServices(builder.Services);

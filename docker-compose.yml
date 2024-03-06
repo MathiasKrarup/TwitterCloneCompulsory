@@ -9,7 +9,7 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - mssql-data:/var/opt/mssql
+      - mssql-data:/var/opt/mssql/auth
 
   authservice:
     build:
@@ -23,16 +23,6 @@ services:
     depends_on:
       - Auth-db
 
-  User-db:
-    image: mcr.microsoft.com/azure-sql-edge:latest
-    environment:
-      MSSQL_SA_PASSWORD: "YourUserDBPassword"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1434:1433"
-    volumes:
-      - user-mssql-data:/var/opt/mssql
-
   userservice:
     build:
       context: .
@@ -40,8 +30,10 @@ services:
     ports:
       - "8090:80"
       - "8091:443"
+    environment:
+      - Jwt:Key=6392f084ac5423fc2d833b164cba70c48cb24330
     depends_on:
-      - User-db
+      - Auth-db
 
 volumes:
   mssql-data:

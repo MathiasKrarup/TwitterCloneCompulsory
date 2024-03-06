@@ -28,4 +28,6 @@ public interface IUserRepo
     /// <param name="userId"></param>
     /// <returns></returns>
     Task DeleteUserAsync(int userId);
+
+    void Rebuild(); 
 }
