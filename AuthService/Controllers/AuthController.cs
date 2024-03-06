@@ -1,5 +1,8 @@
 using Domain.DTOs;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using TwitterCloneCompulsory.Business_Entities;
 using TwitterCloneCompulsory.Interfaces;
 
 namespace TwitterCloneCompulsory.Controllers;
@@ -44,5 +47,34 @@ public class AuthController : ControllerBase
     {
             _authRepo.Rebuild();
             return Ok();
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var existingLogin = await _authRepo.GetUsersByUserId(registerDto.UserId);
+        if (existingLogin != null)
+        {
+            return BadRequest("a login for this user already exists.");
+        }
+
+        var passwordHasher = new PasswordHasher<Login>();
+        var hashedPassword = passwordHasher.HashPassword(null, registerDto.Password);
+
+        var login = new Login
+        {
+            UserId = registerDto.UserId,
+            UserName = registerDto.Username,
+            PasswordHash = hashedPassword
+        };
+
+        await _authRepo.RegisterUserAsync(login);
+
+        return Ok(new { message = "User registered succesfully" });
     }
 }

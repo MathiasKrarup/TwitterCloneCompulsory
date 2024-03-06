@@ -24,13 +24,26 @@ public class AuthRepo : IAuthRepo
     {
         try
         {
-            return await _context.Logins.FirstOrDefaultAsync
-                (u => u.AuthUser.Username == username) ?? throw new Exception("User was not found");
+            return await _context.Logins.FirstOrDefaultAsync(u => u.UserName == username)
+                   ?? throw new Exception("The user was not found");
         }
         catch (Exception exception)
         {
             throw new Exception("There was an error getting the user by their username: " + exception.Message);
         }
+    }
+
+    public async Task<Login> RegisterUserAsync(Login newLogin)
+    {
+        await _context.Logins.AddAsync(newLogin);
+        await _context.SaveChangesAsync();
+        return newLogin;
+    }
+
+    public async Task<Login> GetUsersByUserId(int userId)
+    {
+        var login = await _context.Logins.FirstOrDefaultAsync(l => l.UserId == userId);
+        return login ?? throw new KeyNotFoundException("No login found for the provided user ID.");
     }
 
     public void Rebuild()

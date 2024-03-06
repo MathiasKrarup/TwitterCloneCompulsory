@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TwitterCloneCompulsory.Business_Entities;
 using TwitterCloneCompulsory.Interfaces;
@@ -32,8 +33,9 @@ public class ValidationService : IValidationService
 
         if (login != null)
         {
-            // Finde en løsning til password verification logik
-            return login.Password == password;
+            var passwordHasher = new PasswordHasher<Login>();
+            var verificationResult = passwordHasher.VerifyHashedPassword(login, login.PasswordHash, password);
+            return verificationResult == PasswordVerificationResult.Success;
         }
 
         return false;
@@ -52,8 +54,9 @@ public class ValidationService : IValidationService
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Name, login.AuthUser.Username),
-                new Claim("UserId", login.AuthUserId.ToString())
+                new Claim(ClaimTypes.Name, login.UserName),
+                new Claim("UserId", login.Id.ToString())
+
             }),
             Expires = DateTime.UtcNow.AddHours(2), 
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
