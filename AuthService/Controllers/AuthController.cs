@@ -55,12 +55,13 @@ public class AuthController : ControllerBase
             return Ok();
     }
 
-    [HttpPost("register")]
+    [HttpPost]
+    [Route("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
         var httpClient = _httpClientFactory.CreateClient();
 
-        var userServiceUrl = "placeholder";
+        var userServiceUrl = "http://localhost:8090/User";
 
         var response = await httpClient.GetAsync($"{userServiceUrl}/getByUsername/{registerDto.Username}");
 
