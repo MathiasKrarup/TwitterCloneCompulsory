@@ -26,17 +26,15 @@ services:
   User-db:
     image: mcr.microsoft.com/azure-sql-edge:latest
     healthcheck:
-      test: [ "CMD", "curl", "--fail", "http://localhost:1434", "||", "exit 1" ]
-      timeout: 10s
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S mssql-database -U sa -P SuperSecret7! -Q 'SELECT 1' & exit 0 || exit 1"]
       interval: 10s
-      retries: 30
+      retries: 10
+      timeout: 3s
     environment:
       MSSQL_SA_PASSWORD: "SuperSecret7!"
       ACCEPT_EULA: "Y"
     ports:
       - "1434:1433"
-    volumes:
-      - user-mssql-data:/var/opt/mssql/user
 
   userservice:
     build:
