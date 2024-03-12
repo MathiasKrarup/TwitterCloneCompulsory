@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json.Serialization;
 using Domain;
 using Domain.DTOs;
@@ -57,41 +58,43 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+    public async Task<IActionResult> Register([FromBody] ExtendedLoginDto extendedLoginDto)
     {
         var httpClient = _httpClientFactory.CreateClient();
+        var userServiceUrl = "http://userservice:80";
 
-        var userServiceUrl = "http://localhost:8090/User";
-
-        var response = await httpClient.GetAsync($"{userServiceUrl}/getByUsername/{registerDto.Username}");
-
-        if (!response.IsSuccessStatusCode)
+        var userDtoContent = new StringContent(JsonConvert.SerializeObject(new UserDto
         {
-            return BadRequest("User does not exist");
+            Email = extendedLoginDto.Email,
+            Firstname = extendedLoginDto.Firstname,
+            Lastname = extendedLoginDto.Lastname,
+            Age = extendedLoginDto.Age
+        }), Encoding.UTF8, "application/json");
+
+        var createUserResponse = await httpClient.PostAsync($"{userServiceUrl}/User", userDtoContent);
+        if (!createUserResponse.IsSuccessStatusCode)
+        {
+            return StatusCode((int)createUserResponse.StatusCode, "Failed to create user in UserService.");
         }
 
-        
-        var userContent = await response.Content.ReadAsStringAsync();
-        var user = JsonConvert.DeserializeObject<User>(userContent);
+        var createdUserContent = await createUserResponse.Content.ReadAsStringAsync();
+        var createdUser = JsonConvert.DeserializeObject<User>(createdUserContent);
+        var userId = createdUser.Id;
 
-        var existingLogin = await _authRepo.GetUsersByUsernameAsync(registerDto.Username);
-        if (existingLogin != null)
-        {
-            return BadRequest("A login for this user already exists");
-        }
 
         var passwordHasher = new PasswordHasher<Login>();
-        var hashedPassword = passwordHasher.HashPassword(null, registerDto.Password);
+        var hashedPassword = passwordHasher.HashPassword(null, extendedLoginDto.Password);
 
         var login = new Login
         {
-            UserId = user.Id,
-            UserName = registerDto.Username,
+            UserId = userId,
+            UserName = extendedLoginDto.Username,
             PasswordHash = hashedPassword
         };
 
         await _authRepo.RegisterUserAsync(login);
-        
-        return Ok(new { message = "User registered successfully." });
+
+        return Ok(new { Message = "User registered successfully." });
+
     }
 }

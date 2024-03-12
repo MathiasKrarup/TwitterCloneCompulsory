@@ -39,8 +39,9 @@ public class UserController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        int userId = await _userCrud.AddUserAsync(userDto);
-        return CreatedAtAction(nameof(GetUser), new { id = userId }, userDto);
+        var createdUser = await _userCrud.AddUserAsync(userDto);
+
+        return CreatedAtAction(nameof(GetUser), new { id = createdUser.Id }, createdUser);
     }
 
     [HttpPut("{id}")]
@@ -98,10 +99,10 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("getByUserName/{username}")]
-    public async Task<ActionResult<User>> GetUserByUsername(string username)
+    [HttpGet("getByUserName/{email}")]
+    public async Task<ActionResult<User>> GetUserByUsername(string email)
     {
-        var user = await _userCrud.GetUserByUsername(username);
+        var user = await _userCrud.GetUserByEmail(email);
         if (user == null)
         {
             return NotFound();

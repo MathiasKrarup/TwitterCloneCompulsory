@@ -12,12 +12,12 @@ public class UserRepository : IUserRepo
     {
         _context = context;
     }
-    
-    public async Task<int> CreateUserAsync(User user)
+
+    public async Task<User> CreateUserAsync(User user)
     {
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        return user.Id;
+        return user;
     }
 
     public async Task<User> GetUserAsync(int userId)
@@ -41,9 +41,9 @@ public class UserRepository : IUserRepo
         }
     }
 
-    public async Task<User> GetUserByUsernameAsync(string username)
+    public async Task<User> GetUserByEmailAsync(string email)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
 
     public void Rebuild()

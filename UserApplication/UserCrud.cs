@@ -14,13 +14,15 @@ public class UserCrud : IUserCrud
     {
         _userRepo = userRepo;
     }
-    
-    public async Task<int> AddUserAsync(UserDto userDto)
+
+    public async Task<User> AddUserAsync(UserDto userDto)
     {
         var user = new User
         {
             Email = userDto.Email,
-            Username = userDto.Username,
+            Firstname = userDto.Firstname,
+            Lastname = userDto.Lastname,
+            Age = userDto.Age,
             DateCreated = DateTime.UtcNow,
         };
         return await _userRepo.CreateUserAsync(user);
@@ -51,14 +53,16 @@ public class UserCrud : IUserCrud
         }
 
         user.Email = updateUserDto.Email;
-        user.Username = updateUserDto.Username;
+        user.Firstname = updateUserDto.Firstname;
+        user.Lastname = updateUserDto.Lastname;
+        user.Age = updateUserDto.Age;
         
 
         await _userRepo.UpdateUserAsync(user);
     }
 
-    public async Task<User> GetUserByUsername(string username)
+    public async Task<User> GetUserByEmail(string email)
     {
-        return await _userRepo.GetUserByUsernameAsync(username);
+        return await _userRepo.GetUserByEmailAsync(email);
     }
 }

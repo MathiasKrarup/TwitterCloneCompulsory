@@ -9,7 +9,7 @@ public interface IUserRepo
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
-    Task<int> CreateUserAsync(User user);
+    Task<User> CreateUserAsync(User user);
     /// <summary>
     /// Gets an user
     /// </summary>
@@ -29,7 +29,7 @@ public interface IUserRepo
     /// <returns></returns>
     Task DeleteUserAsync(int userId);
 
-    Task<User> GetUserByUsernameAsync(string username);
+    Task<User> GetUserByEmailAsync(string email);
 
     void Rebuild(); 
 }
