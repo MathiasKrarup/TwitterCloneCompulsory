@@ -11,11 +11,12 @@ public class User
     /// The e-mail of the user
     /// </summary>
     public string Email { get; set; }
+
+    public string Firstname { get; set; }
+    public string Lastname { get; set; }
+
+    public int Age { get; set; }
     
-    /// <summary>
-    /// The username of the user
-    /// </summary>
-    public string Username { get; set; }
 
     /// <summary>
     /// The data the user is created
