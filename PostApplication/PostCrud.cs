@@ -1,18 +1,22 @@
-﻿using PostService.Models;
+﻿using AutoMapper;
+using Domain;
 using Domain.DTOs;
 using PostApplication.Interfaces;
 using PostInfrastructure;
+using PostInfrastructure.Interfaces;
 
 namespace PostApplication;
 
 public class PostCrud : IPostCrud
 {
-    private readonly PostRepository _postRepo;
+    private readonly IPostRepository _postRepo;
+    private readonly IMapper _mapper;
 
-    public PostCrud(PostRepository postRepo)
+    public PostCrud(IPostRepository postRepo, IMapper mapper)
     {
         _postRepo = postRepo;
-    }
+        _mapper = mapper;
+    }   
 
     public async Task<int> AddPostAsync(PostDto postDto)
     {
@@ -20,7 +24,7 @@ public class PostCrud : IPostCrud
             Content = postDto.Content,
             UserId = postDto.UserId,
         };
-        return await _postRepo.CreatePostAsync(post);
+        return await _postRepo.CreatePostAsync(_mapper.Map<Post>(postDto));
     }
 
     public async Task<Post> GetPostAsync(int postId)
@@ -28,7 +32,7 @@ public class PostCrud : IPostCrud
         return await _postRepo.GetPostAsync(postId);
     }
 
-    public async Task UpdatePostAsync(PostDto postDto)
+    public async Task UpdatePostAsync(int postId, PostDto postDto)
     {
         var post = await _postRepo.GetPostAsync(postDto.PostId);
 
@@ -40,11 +44,21 @@ public class PostCrud : IPostCrud
         post.Content = postDto.Content;
         post.UserId = postDto.UserId;
 
-        await _postRepo.UpdatePostAsync(post);
+        await _postRepo.UpdatePostAsync(postId, _mapper.Map<Post>(postDto));
     }
 
     public async Task DeletePostAsync(int postId)
     {
         await _postRepo.DeletePostAsync(postId);
+    }
+
+    public async Task<IEnumerable<Post>> GetPostsAsync()
+    {
+        return await _postRepo.GetPostsAsync();
+    }
+
+    public void Rebuild()
+    {
+        _postRepo.Rebuild();
     }
 }

@@ -1,4 +1,5 @@
-﻿using PostService.Models;
+﻿using Domain;
+using System.Collections;
 
 namespace PostInfrastructure.Interfaces;
 
@@ -19,11 +20,17 @@ public interface IPostRepository
     Task<Post> GetPostAsync(int postId);
 
     /// <summary>
+    /// Gets a list of posts
+    /// </summary>
+    /// <returns></returns>
+    Task<IEnumerable<Post>> GetPostsAsync();
+
+    /// <summary>
     /// Updates a Post
     /// </summary>
     /// <param name="post"></param>
     /// <returns></returns>
-    Task UpdatePostAsync(Post post);
+    Task UpdatePostAsync(int postId,Post post);
 
     /// <summary>
     /// Deletes a Post
@@ -31,4 +38,6 @@ public interface IPostRepository
     /// <param name="postId"></param>
     /// <returns></returns>
     Task DeletePostAsync(int postId);
+
+    void Rebuild();
 }

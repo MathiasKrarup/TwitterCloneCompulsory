@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PostService.Models;
+﻿using Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace PostInfrastructure;
 
