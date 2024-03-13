@@ -13,4 +13,6 @@ namespace TwitterCloneCompulsory.Interfaces;
 
         public void Rebuild();
 
-    }
+        Task SaveTokenAsync(Token token);
+
+}

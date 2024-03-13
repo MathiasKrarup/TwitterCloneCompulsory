@@ -47,4 +47,23 @@ public class AuthController : ControllerBase
 
         return Ok(new { Message = "User registered successfully." });
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    {
+        try
+        {
+            var token = await _validationService.GenerateTokenForLoginAsync(loginDto);
+            return Ok(new { Token = token });
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return NotFound(exception.Message);
+        }
+        catch (UnauthorizedAccessException unauthorizedException)
+        {
+            return Unauthorized(unauthorizedException.Message);
+        }
+    }
+    
 }
