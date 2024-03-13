@@ -65,5 +65,13 @@ public class AuthController : ControllerBase
             return Unauthorized(unauthorizedException.Message);
         }
     }
-    
+
+    [HttpGet("{userId}/hasActiveToken")]
+    public async Task<IActionResult> HasActiveToken(int userId)
+    {
+        var isActive = await _validationService.UserHasActiveTokenAsync(userId);
+        return Ok(new { IsActive = isActive });
+    }
+
+
 }

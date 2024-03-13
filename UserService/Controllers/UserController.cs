@@ -81,12 +81,12 @@ public class UserController : ControllerBase
             return Unauthorized("Invalid token");
         }
 
-        if (id != userIdFromToken)
+        var success = await _userCrud.DeleteUserAsync(id, userIdFromToken);
+
+        if (!success)
         {
-            return Forbid("You do not have permission to delete this user");
+            return Forbid("You do not have permission to delete this user or the token is not active");
         }
-        
-        await _userCrud.DeleteUserAsync(id);
 
         return NoContent();
     }
@@ -99,8 +99,8 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("getByUserName/{email}")]
-    public async Task<ActionResult<User>> GetUserByUsername(string email)
+    [HttpGet("getByEmail/{email}")]
+    public async Task<ActionResult<User>> GetUserByEmail(string email)
     {
         var user = await _userCrud.GetUserByEmail(email);
         if (user == null)

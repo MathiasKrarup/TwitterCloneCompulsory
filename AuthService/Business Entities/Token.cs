@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TwitterCloneCompulsory.Business_Entities;
@@ -18,9 +19,9 @@ public class Token
         /// </summary>
         public DateTime TokenExpiryTime { get; set; }
 
-        /// <summary>
-        /// Boolean that checks if the token is active
-        /// </summary>
+    /// <summary>
+    /// Boolean that checks if the token is active
+    /// </summary>
         public bool IsActive { get; set; }
 
         /// <summary>

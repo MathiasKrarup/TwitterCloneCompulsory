@@ -58,5 +58,12 @@ public class AuthRepo : IAuthRepo
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> IsTokenActiveAsync(int userId)
+    {
+        var activeToken = await _context.Tokens
+         .Where(t => t.UserId == userId && t.IsActive && t.TokenExpiryTime > DateTime.UtcNow)
+         .FirstOrDefaultAsync();
 
+        return activeToken != null;
+    }
 }

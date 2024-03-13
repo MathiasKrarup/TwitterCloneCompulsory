@@ -10,5 +10,6 @@ public interface IValidationService
     Task<bool> ValidateUserByTokenAsync(string token);
     Task<string> GenerateTokenForLoginAsync(LoginDto loginDto);
     Task<bool> RegisterAsync(ExtendedLoginDto extendedLoginDto);
+    Task<bool> UserHasActiveTokenAsync(int userId);
 
 }
