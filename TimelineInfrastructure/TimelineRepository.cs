@@ -1,5 +1,8 @@
-﻿namespace TimelineInfrastructure;
+﻿using TimelineInfrastructure.Interfaces;
 
-public class TimelineRepository
+namespace TimelineInfrastructure;
+
+public class TimelineRepository : ITimelineRepo
 {
+
 }

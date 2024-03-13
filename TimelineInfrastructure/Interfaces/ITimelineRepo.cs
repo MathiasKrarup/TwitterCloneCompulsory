@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace TimelineInfrastructure.Interfaces
 {
-    internal class ITimelineRepo
+    public interface ITimelineRepo
     {
+
     }
 }

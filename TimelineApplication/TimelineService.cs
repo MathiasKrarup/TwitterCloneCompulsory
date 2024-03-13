@@ -1,6 +1,8 @@
-﻿namespace TimelineApplication;
+﻿using TimelineApplication.Interfaces;
 
-public class TimelineService
+namespace TimelineApplication;
+
+public class TimelineService : ITimelineService
 {
 
 }
