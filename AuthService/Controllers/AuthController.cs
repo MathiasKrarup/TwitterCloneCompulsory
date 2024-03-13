@@ -31,8 +31,8 @@ public class AuthController : ControllerBase
     [Route("rebuild")]
     public IActionResult Rebuild()
     {
-            _authrepo.Rebuild();
-            return Ok();
+        _authrepo.Rebuild();
+        return Ok();
     }
 
     [HttpPost]
@@ -73,5 +73,32 @@ public class AuthController : ControllerBase
         return Ok(new { IsActive = isActive });
     }
 
+    [HttpDelete("deleteLogin/{userId}")]
+    public async Task<IActionResult> DeleteLogin(int userId)
+    {
+        var result = await _validationService.DeleteLoginAsync(userId);
+        if (result)
+        {
+            return NoContent();
+        }
+        else
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting login");
+        }
+    }
+
+    [HttpDelete("deleteTokens/{userId}")]
+    public async Task<IActionResult> DeleteTokens(int userId)
+    {
+        var result = await _validationService.DeleteTokensAsync(userId);
+        if (result)
+        {
+            return NoContent();
+        }
+        else
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting token");
+        }
+    }
 
 }

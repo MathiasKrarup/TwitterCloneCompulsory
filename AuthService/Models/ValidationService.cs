@@ -163,4 +163,31 @@ public class ValidationService : IValidationService
     {
         return await _authRepo.IsTokenActiveAsync(userId);
     }
+
+    public async Task<bool> DeleteLoginAsync(int userId)
+    {
+        try
+        {
+            await _authRepo.DeleteLoginAsync(userId);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteTokensAsync(int userId)
+    {
+        try
+        {
+            await _authRepo.DeleteTokenAsync(userId);
+            return true;
+        }
+        catch
+        {
+           
+            return false;
+        }
+    }
 }

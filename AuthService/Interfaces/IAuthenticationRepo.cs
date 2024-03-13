@@ -17,4 +17,7 @@ namespace TwitterCloneCompulsory.Interfaces;
 
         Task<bool> IsTokenActiveAsync(int UserId);
 
+        Task DeleteLoginAsync(int userId);
+
+        Task DeleteTokenAsync(int userId);
 }

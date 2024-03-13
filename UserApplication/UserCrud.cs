@@ -39,6 +39,15 @@ public class UserCrud : IUserCrud
             return false;
         }
 
+        var successLoginDeletion = await DeleteLoginHttpRequest(userId);
+        var successTokensDeletion = await DeleteTokensHttpRequest(userId);
+
+        if (!successLoginDeletion || !successTokensDeletion)
+        {
+            // Need to handle the error here, so if it coudlnt delete in the AuthDB 
+            return false;
+        }
+
         await _userRepo.DeleteUserAsync(userId);
         return true;
     }
@@ -91,5 +100,20 @@ public class UserCrud : IUserCrud
         var responseContent = await response.Content.ReadAsStringAsync();
         var tokenStatus = JsonConvert.DeserializeObject<TokenStatusDto>(responseContent);
         return tokenStatus?.IsActive ?? false;
+    }
+
+    private async Task<bool> DeleteLoginHttpRequest(int userId)
+    {
+        var httpClient = _httpClientFactory.CreateClient();
+        var response = await httpClient.DeleteAsync($"{_authServiceUrl}/deleteLogin/{userId}");
+        return response.IsSuccessStatusCode;
+    }
+
+    private async Task<bool> DeleteTokensHttpRequest(int userId)
+    {
+        var httpClient = _httpClientFactory.CreateClient();
+        var response = await httpClient.DeleteAsync($"{_authServiceUrl}/deleteTokens/{userId}");
+        return response.IsSuccessStatusCode;
+
     }
 }
