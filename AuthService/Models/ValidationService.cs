@@ -28,7 +28,7 @@ public class ValidationService : IValidationService
     {
         _authRepo = authRepo;
         _mapper = mapper;
-        _userServiceUrl = "http://userservice:80/User";
+        _userServiceUrl = "https://localhost:7057/User";
         _httpClient = httpClientFactory.CreateClient();
         _configuration = configuration;
         _jwtKey = configuration["Jwt:Key"];
@@ -157,5 +157,37 @@ public class ValidationService : IValidationService
         await _authRepo.RegisterUserAsync(login);
 
         return true;
+    }
+
+    public async Task<bool> UserHasActiveTokenAsync(int userId)
+    {
+        return await _authRepo.IsTokenActiveAsync(userId);
+    }
+
+    public async Task<bool> DeleteLoginAsync(int userId)
+    {
+        try
+        {
+            await _authRepo.DeleteLoginAsync(userId);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteTokensAsync(int userId)
+    {
+        try
+        {
+            await _authRepo.DeleteTokenAsync(userId);
+            return true;
+        }
+        catch
+        {
+           
+            return false;
+        }
     }
 }

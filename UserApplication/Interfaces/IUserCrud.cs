@@ -6,7 +6,7 @@ namespace UserApplication.Interfaces;
 public interface IUserCrud
 {
     Task<User> AddUserAsync(UserDto userDto);
-    Task DeleteUserAsync(int userId);
+    Task<bool> DeleteUserAsync(int userId, int requesterUserId); 
     Task<User> GetUserAsync(int userId);
     Task UpdateUserAsync(UpdateUserDto updateUserDto);
     Task<User> GetUserByEmail(string Email);

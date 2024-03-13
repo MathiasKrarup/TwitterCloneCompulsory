@@ -58,5 +58,32 @@ public class AuthRepo : IAuthRepo
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> IsTokenActiveAsync(int userId)
+    {
+        var activeToken = await _context.Tokens
+         .Where(t => t.UserId == userId && t.IsActive && t.TokenExpiryTime > DateTime.UtcNow)
+         .FirstOrDefaultAsync();
 
+        return activeToken != null;
+    }
+
+    public async Task DeleteLoginAsync(int userId)
+    {
+        var login = await _context.Logins.Where(l => l.UserId == userId).FirstOrDefaultAsync();
+        if (login != null)
+        {
+            _context.Logins.Remove(login);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task DeleteTokenAsync(int userId)
+    {
+        var tokens = _context.Tokens.Where(t => t.UserId == userId).ToList();
+        if (tokens.Any())
+        {
+            _context.Tokens.RemoveRange(tokens);
+            await _context.SaveChangesAsync();
+        }
+    }
 }
