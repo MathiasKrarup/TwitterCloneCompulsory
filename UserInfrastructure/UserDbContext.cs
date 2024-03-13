@@ -17,7 +17,8 @@ public class UserDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(
-             "Server=User-db,1433;Database=User;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;");
+             "Server=User-db,1433;Database=User;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;"
+);
     }
 
 

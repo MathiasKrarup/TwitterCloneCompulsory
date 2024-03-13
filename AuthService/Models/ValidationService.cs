@@ -8,6 +8,7 @@ using Domain.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TwitterCloneCompulsory.Business_Entities;
 using TwitterCloneCompulsory.Interfaces;
 
@@ -27,7 +28,7 @@ public class ValidationService : IValidationService
     {
         _authRepo = authRepo;
         _mapper = mapper;
-        _userServiceUrl = "http://userservice:80";
+        _userServiceUrl = "http://userservice:80/User";
         _httpClient = httpClientFactory.CreateClient();
         _configuration = configuration;
         _jwtKey = configuration["Jwt:Key"];
@@ -57,7 +58,59 @@ public class ValidationService : IValidationService
         throw new NotImplementedException();
     }
 
-    public async Task<string> GenerateTokenForLoginAsync(Login login)
+    public async Task<string> GenerateTokenForLoginAsync(LoginDto loginDto)
+    {
+        var login = await _authRepo.GetUsersByUsernameAsync(loginDto.Username);
+
+        if (login == null)
+        {
+            throw new KeyNotFoundException("User not found");
+        }
+
+        var passwordHasher = new PasswordHasher<Login>();
+        var verifyPassword = passwordHasher.VerifyHashedPassword(login, login.PasswordHash, loginDto.Password);
+
+        if (verifyPassword != PasswordVerificationResult.Success)
+        {
+            throw new UnauthorizedAccessException("Invalid password");
+        }
+
+        var userExists = await VerifyUserExists(login.UserId);
+            if (!userExists)
+            {
+            throw new KeyNotFoundException("User not found in UserService");
+            }
+        
+
+        var jwtToken = GenerateJwtToken(login);
+
+        var token = new Token
+        {
+            Value = jwtToken,
+            TokenExpiryTime = DateTime.UtcNow.AddHours(3), 
+            IsActive = true,
+            UserId = login.UserId
+        };
+
+        await _authRepo.SaveTokenAsync(token);
+
+        return jwtToken;
+    }
+
+    private async Task<bool> VerifyUserExists(int userId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"{_userServiceUrl}/{userId}");
+            return response.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private string GenerateJwtToken(Login login)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_jwtKey);
@@ -66,16 +119,14 @@ public class ValidationService : IValidationService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, login.UserName),
-                new Claim("UserId", login.Id.ToString())
-
+                new Claim("UserId", login.UserId.ToString())
             }),
-            Expires = DateTime.UtcNow.AddHours(2), 
+            Expires = DateTime.UtcNow.AddHours(3),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
-
     }
 
     public void Rebuild()
@@ -87,7 +138,7 @@ public class ValidationService : IValidationService
     {
         var userDto = _mapper.Map<UserDto>(extendedLoginDto);
         var userDtoContent = new StringContent(JsonConvert.SerializeObject(userDto), Encoding.UTF8, "application/json");
-        var createUserResponse = await _httpClient.PostAsync($"{_userServiceUrl}/User", userDtoContent);
+        var createUserResponse = await _httpClient.PostAsync($"{_userServiceUrl}", userDtoContent);
 
         if (!createUserResponse.IsSuccessStatusCode)
         {

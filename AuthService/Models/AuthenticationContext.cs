@@ -27,12 +27,14 @@ public class AuthenticationContext : DbContext
             entity.Property(e => e.UserName).IsRequired();
             entity.Property(e => e.PasswordHash).IsRequired();
         });
-        
+
         modelBuilder.Entity<Token>(entity =>
         {
             entity.HasKey(e => e.TokenId);
             entity.Property(e => e.TokenExpiryTime).IsRequired();
             entity.Property(e => e.IsActive).IsRequired();
+            entity.Property(e => e.UserId).IsRequired(); 
+            entity.Property(e => e.Value).IsRequired();
         });
     }
 

@@ -51,5 +51,12 @@ public class AuthRepo : IAuthRepo
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
     }
-    
+
+    public async Task SaveTokenAsync(Token token)
+    {
+        _context.Tokens.Add(token);
+        await _context.SaveChangesAsync();
+    }
+
+
 }
