@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using AutoMapper;
+using Domain;
 using Domain.DTOs;
 using Microsoft.AspNetCore.Identity;
 using UserApplication.Interfaces;
@@ -9,22 +10,17 @@ namespace UserApplication;
 public class UserCrud : IUserCrud
 {
     private readonly IUserRepo _userRepo;
+    private readonly IMapper _mapper;
 
-    public UserCrud(IUserRepo userRepo)
+    public UserCrud(IUserRepo userRepo, IMapper mapper)
     {
         _userRepo = userRepo;
+        _mapper = mapper;
     }
 
     public async Task<User> AddUserAsync(UserDto userDto)
     {
-        var user = new User
-        {
-            Email = userDto.Email,
-            Firstname = userDto.Firstname,
-            Lastname = userDto.Lastname,
-            Age = userDto.Age,
-            DateCreated = DateTime.UtcNow,
-        };
+        var user = _mapper.Map<User>(userDto);
         return await _userRepo.CreateUserAsync(user);
     }
 
