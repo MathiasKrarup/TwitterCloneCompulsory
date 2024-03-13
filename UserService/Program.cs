@@ -17,6 +17,12 @@ var mapperConfig = new MapperConfiguration(configuration =>
       .ForMember(dest => dest.Lastname, opt => opt.MapFrom(src => src.Lastname))
       .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.Age))
       .ReverseMap();
+
+   configuration.CreateMap<UpdateUserDto, User>()
+    .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+    .ForMember(dest => dest.Firstname, opt => opt.MapFrom(src => src.Firstname))
+    .ForMember(dest => dest.Lastname, opt => opt.MapFrom(src => src.Lastname))
+    .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.Age));
 });
 
 IMapper mapper = mapperConfig.CreateMapper();

@@ -56,7 +56,7 @@ public class UserController : ControllerBase
         var userIdClaim = User.FindFirst("UserId")?.Value;
         if (!int.TryParse(userIdClaim, out var userIdFromToken))
         {
-            return Unauthorized("invalid token");
+            return Unauthorized("Invalid token");
         }
 
         if (id != userIdFromToken)
@@ -64,13 +64,22 @@ public class UserController : ControllerBase
             return Forbid("You do not have permission to update this user");
         }
 
-        updateUserDto.Id = id;
-
-        await _userCrud.UpdateUserAsync(updateUserDto);
-
-        return NoContent();
+        try
+        {
+            await _userCrud.UpdateUserAsync(id, updateUserDto);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
-    
+
+
     [HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> DeleteUser(int id)
