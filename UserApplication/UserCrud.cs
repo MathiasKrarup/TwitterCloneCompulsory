@@ -34,7 +34,7 @@ public class UserCrud : IUserCrud
 
     public async Task<bool> DeleteUserAsync(int userId, int requesterUserId)
     {
-        if (userId != requesterUserId || !await CheckUserHasActiveTokenAsync(requesterUserId))
+        if (!await CheckUserHasActiveTokenAsync(requesterUserId))
         {
             return false;
         }
