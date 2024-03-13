@@ -71,13 +71,10 @@ public class UserCrud : IUserCrud
             throw new KeyNotFoundException("The user was not found");
         }
 
-        user.Email = updateUserDto.Email;
-        user.Firstname = updateUserDto.Firstname;
-        user.Lastname = updateUserDto.Lastname;
-        user.Age = updateUserDto.Age;
-        
+        _mapper.Map(updateUserDto, user);
 
         await _userRepo.UpdateUserAsync(user);
+        
     }
 
     public async Task<User> GetUserByEmail(string email)
@@ -88,7 +85,7 @@ public class UserCrud : IUserCrud
     private async Task<bool> CheckUserHasActiveTokenAsync(int userId)
     {
         var httpClient = _httpClientFactory.CreateClient();
-        var authServiceUrl = _authServiceUrl; 
+        var authServiceUrl = _authServiceUrl;
 
         var response = await httpClient.GetAsync($"{authServiceUrl}/{userId}/hasActiveToken");
 
@@ -100,6 +97,11 @@ public class UserCrud : IUserCrud
         var responseContent = await response.Content.ReadAsStringAsync();
         var tokenStatus = JsonConvert.DeserializeObject<TokenStatusDto>(responseContent);
         return tokenStatus?.IsActive ?? false;
+    }
+
+    public async Task<bool> CanUserUpdateAsync(int userId)
+    {
+        return await CheckUserHasActiveTokenAsync(userId);
     }
 
     private async Task<bool> DeleteLoginHttpRequest(int userId)
@@ -116,4 +118,6 @@ public class UserCrud : IUserCrud
         return response.IsSuccessStatusCode;
 
     }
+
+
 }

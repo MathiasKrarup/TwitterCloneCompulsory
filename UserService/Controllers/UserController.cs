@@ -64,7 +64,11 @@ public class UserController : ControllerBase
             return Forbid("You do not have permission to update this user");
         }
 
-        updateUserDto.Id = id;
+        var canUpdate = await _userCrud.CanUserUpdateAsync(userIdFromToken);
+        if (!canUpdate)
+        {
+            return Forbid("The token is not active");
+        }
 
         await _userCrud.UpdateUserAsync(updateUserDto);
 
