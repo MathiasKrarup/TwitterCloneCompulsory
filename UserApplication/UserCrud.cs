@@ -62,9 +62,9 @@ public class UserCrud : IUserCrud
         _userRepo.Rebuild();
     }
 
-    public async Task UpdateUserAsync(UpdateUserDto updateUserDto)
+    public async Task UpdateUserAsync(int id, UpdateUserDto updateUserDto)
     {
-        var user = await _userRepo.GetUserAsync(updateUserDto.Id);
+        var user = await _userRepo.GetUserAsync(id);
 
         if (user == null)
         {
