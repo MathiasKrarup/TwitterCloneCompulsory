@@ -1,5 +1,5 @@
 ﻿namespace TimelineInfrastructure;
 
-public class Class1
+public class TimelineRepository
 {
 }
