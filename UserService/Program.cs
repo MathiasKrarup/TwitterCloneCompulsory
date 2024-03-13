@@ -1,10 +1,26 @@
 using System.Text;
+using AutoMapper;
+using Domain;
+using Domain.DTOs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using UserInfrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var mapperConfig = new MapperConfiguration(configuration =>
+{
+    configuration.CreateMap<UserDto, User>()
+      .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+      .ForMember(dest => dest.Firstname, opt => opt.MapFrom(src => src.Firstname))
+      .ForMember(dest => dest.Lastname, opt => opt.MapFrom(src => src.Lastname))
+      .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.Age))
+      .ReverseMap();
+});
+
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 // Add services to the container.
 

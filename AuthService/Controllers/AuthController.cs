@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using TwitterCloneCompulsory.Business_Entities;
 using TwitterCloneCompulsory.Interfaces;
+using TwitterCloneCompulsory.Repo;
 
 namespace TwitterCloneCompulsory.Controllers;
 
@@ -17,42 +18,20 @@ namespace TwitterCloneCompulsory.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IValidationService _validationService;
-    private readonly IAuthRepo _authRepo;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly string _userServiceUrl;
+    private readonly IAuthRepo _authrepo;
 
-    public AuthController(IValidationService validationService, IAuthRepo authRepo, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    public AuthController(IValidationService validationService, IAuthRepo authrepo, IConfiguration configuration)
     {
         _validationService = validationService;
-        _authRepo = authRepo;
-        _httpClientFactory = httpClientFactory;
+        _authrepo = authrepo;
     }
 
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var isValidUser = await _validationService.ValidateUserByCredentialsAsync(loginDto.Username, loginDto.Password);
-        if (!isValidUser)
-        {
-            return Unauthorized("Invalid credentials.");
-        }
-
-        var login = await _authRepo.GetUsersByUsernameAsync(loginDto.Username);
-        var token = await _validationService.GenerateTokenForLoginAsync(login);
-
-        return Ok(new { Token = token });
-    }
 
     [HttpGet]
     [Route("rebuild")]
     public IActionResult Rebuild()
     {
-            _authRepo.Rebuild();
+            _authrepo.Rebuild();
             return Ok();
     }
 
@@ -60,41 +39,12 @@ public class AuthController : ControllerBase
     [Route("register")]
     public async Task<IActionResult> Register([FromBody] ExtendedLoginDto extendedLoginDto)
     {
-        var httpClient = _httpClientFactory.CreateClient();
-        var userServiceUrl = "http://userservice:80";
-
-        var userDtoContent = new StringContent(JsonConvert.SerializeObject(new UserDto
+        var success = await _validationService.RegisterAsync(extendedLoginDto);
+        if (!success)
         {
-            Email = extendedLoginDto.Email,
-            Firstname = extendedLoginDto.Firstname,
-            Lastname = extendedLoginDto.Lastname,
-            Age = extendedLoginDto.Age
-        }), Encoding.UTF8, "application/json");
-
-        var createUserResponse = await httpClient.PostAsync($"{userServiceUrl}/User", userDtoContent);
-        if (!createUserResponse.IsSuccessStatusCode)
-        {
-            return StatusCode((int)createUserResponse.StatusCode, "Failed to create user in UserService.");
+            return BadRequest("Failed to register the user.");
         }
 
-        var createdUserContent = await createUserResponse.Content.ReadAsStringAsync();
-        var createdUser = JsonConvert.DeserializeObject<User>(createdUserContent);
-        var userId = createdUser.Id;
-
-
-        var passwordHasher = new PasswordHasher<Login>();
-        var hashedPassword = passwordHasher.HashPassword(null, extendedLoginDto.Password);
-
-        var login = new Login
-        {
-            UserId = userId,
-            UserName = extendedLoginDto.Username,
-            PasswordHash = hashedPassword
-        };
-
-        await _authRepo.RegisterUserAsync(login);
-
         return Ok(new { Message = "User registered successfully." });
-
     }
 }
