@@ -22,7 +22,7 @@ public class UserCrud : IUserCrud
     {
         _userRepo = userRepo;
         _mapper = mapper;
-        _authServiceUrl = "https://localhost:7227/Auth";
+        _authServiceUrl = "http://authservice:80/Auth";
         _httpClientFactory = httpClientFactory;
     }
 
