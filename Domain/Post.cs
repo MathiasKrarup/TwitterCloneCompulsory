@@ -22,10 +22,6 @@ public class Post
     /// </summary>
     public string Content { get; set; }
 
-    /// <summary>
-    /// The list of the comments of the post
-    /// </summary>
-    public List<Comment> Comments { get; set; } = new List<Comment>();
     
     /// <summary>
     /// Id of the current timeline
