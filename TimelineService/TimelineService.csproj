@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PostService\PostService.csproj" />
+      <ProjectReference Include="..\TimelineApplication\TimelineApplication.csproj" />
     </ItemGroup>
 
 </Project>
