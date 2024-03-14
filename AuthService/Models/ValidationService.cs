@@ -28,7 +28,7 @@ public class ValidationService : IValidationService
     {
         _authRepo = authRepo;
         _mapper = mapper;
-        _userServiceUrl = "https://localhost:7057/User";
+        _userServiceUrl = "http://userservice:80/User";
         _httpClient = httpClientFactory.CreateClient();
         _configuration = configuration;
         _jwtKey = configuration["Jwt:Key"];
@@ -51,11 +51,6 @@ public class ValidationService : IValidationService
         }
 
         return false;
-    }
-
-    public async Task<bool> ValidateUserByTokenAsync(string token)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<string> GenerateTokenForLoginAsync(LoginDto loginDto)
