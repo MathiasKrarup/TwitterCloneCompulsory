@@ -30,7 +30,7 @@ public interface IPostRepository
     /// </summary>
     /// <param name="post"></param>
     /// <returns></returns>
-    Task UpdatePostAsync(int postId,Post post);
+    Task UpdatePostAsync(Post post);
 
     /// <summary>
     /// Deletes a Post

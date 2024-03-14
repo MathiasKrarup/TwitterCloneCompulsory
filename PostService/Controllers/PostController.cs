@@ -1,7 +1,9 @@
 using Domain.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostApplication;
 using PostApplication.Interfaces;
+using System.Security.Claims;
 
 namespace PostService.Controllers;
 
@@ -45,12 +47,19 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> AddPost([FromBody] PostDto dto)
     {
-        try
+       try
         {
-            await _postCrud.AddPostAsync(dto);
-            return StatusCode(201, "Post added successfully");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("invalid token");
+            }
+
+            await _postCrud.AddPostAsync(dto, userId);
+            return StatusCode(201, "Post added succesfully");
         }
         catch (Exception ex)
         {
@@ -60,12 +69,23 @@ public class PostController : ControllerBase
 
     [HttpPut]
     [Route("{postId}")]
+    [Authorize]
     public async Task<IActionResult> UpdatePost([FromRoute] int postId, [FromBody]PostDto postDto)
     {
         try
         {
-            await _postCrud.UpdatePostAsync(postId, postDto);
+            var userIdClaim = User.FindFirstValue("UserId");
+            if (!int.TryParse(userIdClaim, out var userIdFromToken))
+            {
+                return Unauthorized("UserId claim missing");
+            }
+
+            await _postCrud.UpdatePostAsync(postId, postDto, userIdFromToken);
             return Ok();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {

@@ -16,15 +16,13 @@ public class PostCrud : IPostCrud
     {
         _postRepo = postRepo;
         _mapper = mapper;
-    }   
+    }
 
-    public async Task<int> AddPostAsync(PostDto postDto)
+    public async Task<int> AddPostAsync(PostDto postDto, int userId)
     {
-        var post = new Post {
-            Content = postDto.Content,
-            UserId = postDto.UserId,
-        };
-        return await _postRepo.CreatePostAsync(_mapper.Map<Post>(postDto));
+        var post = _mapper.Map<Post>(postDto);
+        post.UserId = userId; 
+        return await _postRepo.CreatePostAsync(post);
     }
 
     public async Task<Post> GetPostAsync(int postId)
@@ -32,19 +30,18 @@ public class PostCrud : IPostCrud
         return await _postRepo.GetPostAsync(postId);
     }
 
-    public async Task UpdatePostAsync(int postId, PostDto postDto)
+    public async Task UpdatePostAsync(int postId, PostDto postDto, int userId)
     {
-        var post = await _postRepo.GetPostAsync(postDto.PostId);
+        var post = await _postRepo.GetPostAsync(postId);
 
-        if (post == null)
+        if (post == null || post.UserId != userId)
         {
-            throw new KeyNotFoundException("The Post was not found");
+            throw new KeyNotFoundException("The Post was not found or you do not have access to update this post");
         }
 
-        post.Content = postDto.Content;
-        post.UserId = postDto.UserId;
+        _mapper.Map(postDto, post);
 
-        await _postRepo.UpdatePostAsync(postId, _mapper.Map<Post>(postDto));
+        await _postRepo.UpdatePostAsync(post);
     }
 
     public async Task DeletePostAsync(int postId)

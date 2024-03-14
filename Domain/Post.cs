@@ -22,9 +22,4 @@ public class Post
     /// </summary>
     public string Content { get; set; }
 
-    
-    /// <summary>
-    /// Id of the current timeline
-    /// </summary>
-    public int TimelineID { get; set; }
 }
