@@ -1,17 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SharedMessages;
 using TimelineApplication.Interfaces;
 
 namespace TimelineService.Controllers
 {
     [ApiController]
-    [Route("controller")]
+    [Route("[controller]")]
     public class TimelineController : ControllerBase
     {
         private readonly ITimelineService _timelineService;
+        private readonly MessageClient _messageClient;
 
-        public TimelineController(ITimelineService timelineService)
+        public TimelineController(ITimelineService timelineService, MessageClient messageClient)
         {
             _timelineService = timelineService;
+            _messageClient = messageClient;
+        }
+
+        [HttpPost]
+        public bool TestTimeMsg()
+        {
+            _messageClient.Send<TimelineMessage>(new TimelineMessage{Message = "Timeline recived!" }, "timeline-message");
+            return true;
         }
 
         [HttpPost]

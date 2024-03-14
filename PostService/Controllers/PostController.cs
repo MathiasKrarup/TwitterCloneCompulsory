@@ -2,6 +2,7 @@ using Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using PostApplication;
 using PostApplication.Interfaces;
+using SharedMessages;
 
 namespace PostService.Controllers;
 
@@ -11,10 +12,12 @@ public class PostController : ControllerBase
 {
     private readonly IPostCrud _postCrud;
     private readonly HttpClient _client = new HttpClient();
+    private readonly MessageClient _messageClient;
 
-    public PostController(IPostCrud postCrud)
+    public PostController(IPostCrud postCrud, MessageClient messageClient)
     {
         _postCrud = postCrud;
+        _messageClient = messageClient;
     }
 
     [HttpGet]
@@ -45,11 +48,25 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
+    public bool TestPostMsg()
+    {
+        _messageClient.Send(
+                new PostMessage { Message = "Post Created!" },
+                 "post-message"
+            );
+        return true;
+    }
+
+    [HttpPost]
     public async Task<IActionResult> AddPost([FromBody] PostDto dto)
     {
         try
         {
             await _postCrud.AddPostAsync(dto);
+            _messageClient.Send(
+                new PostMessage { Message = "Post Created!"},
+                 "post-message"
+            );
             return StatusCode(201, "Post added successfully");
         }
         catch (Exception ex)
