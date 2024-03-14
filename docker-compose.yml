@@ -49,6 +49,33 @@ services:
       User-db:
         condition: service_healthy
 
+  Timeline-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S mssql-database -U sa -P SuperSecret7! -Q 'SELECT 1' & exit 0 || exit 1" ]
+      interval: 10s
+      retries: 10
+      timeout: 3s
+    environment:
+      MSSQL_SA_PASSWORD: "SuperSecret7!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1435:1433"
+
+  timelineservice:
+    build:
+      context: .
+      dockerfile: TimelineService/Dockerfile
+    ports:
+      - "8100:80"
+      - "8101:8101"
+    environment:
+      - Jwt:Key=6392f084ac5423fc2d833b164cba70c48cb24330
+    depends_on:
+      User-db:
+        condition: service_healthy
+
 volumes:
   mssql-data:
   user-mssql-data:
+  timeline-mssql-data:
