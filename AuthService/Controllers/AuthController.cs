@@ -66,12 +66,6 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpGet("{userId}/hasActiveToken")]
-    public async Task<IActionResult> HasActiveToken(int userId)
-    {
-        var isActive = await _validationService.UserHasActiveTokenAsync(userId);
-        return Ok(new { IsActive = isActive });
-    }
 
     [HttpDelete("deleteLogin/{userId}")]
     public async Task<IActionResult> DeleteLogin(int userId)
@@ -87,18 +81,5 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpDelete("deleteTokens/{userId}")]
-    public async Task<IActionResult> DeleteTokens(int userId)
-    {
-        var result = await _validationService.DeleteTokensAsync(userId);
-        if (result)
-        {
-            return NoContent();
-        }
-        else
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting token");
-        }
-    }
 
 }

@@ -22,7 +22,7 @@ public class UserCrud : IUserCrud
     {
         _userRepo = userRepo;
         _mapper = mapper;
-        _authServiceUrl = "http://authservice:80/Auth";
+        _authServiceUrl = "https://localhost:7227/Auth";
         _httpClientFactory = httpClientFactory;
     }
 
@@ -34,23 +34,22 @@ public class UserCrud : IUserCrud
 
     public async Task<bool> DeleteUserAsync(int userId, int requesterUserId)
     {
-        if (!await CheckUserHasActiveTokenAsync(requesterUserId))
+        var user = await _userRepo.GetUserAsync(userId);
+        if (user == null)
         {
             return false;
         }
 
         var successLoginDeletion = await DeleteLoginHttpRequest(userId);
-        var successTokensDeletion = await DeleteTokensHttpRequest(userId);
-
-        if (!successLoginDeletion || !successTokensDeletion)
+        if (!successLoginDeletion)
         {
-            // Need to handle the error here, so if it coudlnt delete in the AuthDB 
             return false;
         }
 
         await _userRepo.DeleteUserAsync(userId);
         return true;
     }
+
 
     public async Task<User> GetUserAsync(int userId)
     {
@@ -64,15 +63,12 @@ public class UserCrud : IUserCrud
 
     public async Task UpdateUserAsync(int id, UpdateUserDto updateUserDto)
     {
-        var user = await _userRepo.GetUserAsync(id);
-
-        if (user == null)
+       var user = await _userRepo.GetUserAsync(id);
+        if (user == null) 
         {
             throw new KeyNotFoundException("The user was not found");
         }
-
         _mapper.Map(updateUserDto, user);
-
         await _userRepo.UpdateUserAsync(user);
         
     }
@@ -82,27 +78,7 @@ public class UserCrud : IUserCrud
         return await _userRepo.GetUserByEmailAsync(email);
     }
 
-    private async Task<bool> CheckUserHasActiveTokenAsync(int userId)
-    {
-        var httpClient = _httpClientFactory.CreateClient();
-        var authServiceUrl = _authServiceUrl;
 
-        var response = await httpClient.GetAsync($"{authServiceUrl}/{userId}/hasActiveToken");
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return false;
-        }
-
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var tokenStatus = JsonConvert.DeserializeObject<TokenStatusDto>(responseContent);
-        return tokenStatus?.IsActive ?? false;
-    }
-
-    public async Task<bool> CanUserUpdateAsync(int userId)
-    {
-        return await CheckUserHasActiveTokenAsync(userId);
-    }
 
     private async Task<bool> DeleteLoginHttpRequest(int userId)
     {
@@ -111,12 +87,9 @@ public class UserCrud : IUserCrud
         return response.IsSuccessStatusCode;
     }
 
-    private async Task<bool> DeleteTokensHttpRequest(int userId)
+    public async Task<bool> CheckIfUserExistsAsync(int userId)
     {
-        var httpClient = _httpClientFactory.CreateClient();
-        var response = await httpClient.DeleteAsync($"{_authServiceUrl}/deleteTokens/{userId}");
-        return response.IsSuccessStatusCode;
-
+        return await _userRepo.GetUserAsync(userId) != null;
     }
 
 
