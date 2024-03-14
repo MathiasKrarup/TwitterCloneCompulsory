@@ -11,16 +11,6 @@ services:
     volumes:
       - mssql-data:/var/opt/mssql
 
-  Post-db:
-    image: mcr.microsoft.com/azure-sql-edge:latest
-    environment:
-      MSSQL_SA_PASSWORD: "SuperSecret7!"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1435:1433"
-    volumes:
-      - post-mssql-data:/var/opt/mssql
-
   authservice:
     build:
       context: .
@@ -33,18 +23,5 @@ services:
     depends_on:
       - Auth-db
 
-  postservice:
-    build:
-      context: .
-      dockerfile: PostService/Dockerfile
-    ports:
-      - "8082:80"
-      - "8083:8083"
-    environment:
-      - Jwt:Key=6392f084ac5423fc2d833b164cba70c48cb24330
-    depends_on:
-      - Post-db
-
 volumes:
   mssql-data:
-  post-mssql-data:
