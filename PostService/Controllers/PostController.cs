@@ -48,6 +48,7 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
+    [Route("TestPostMsg")]
     public bool TestPostMsg()
     {
         _messageClient.Send(

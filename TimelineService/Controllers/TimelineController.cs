@@ -18,6 +18,7 @@ namespace TimelineService.Controllers
         }
 
         [HttpPost]
+        [Route("TestTimeMsg")]
         public bool TestTimeMsg()
         {
             _messageClient.Send<TimelineMessage>(new TimelineMessage{Message = "Timeline recived!" }, "timeline-message");
