@@ -44,10 +44,19 @@ public class PostCrud : IPostCrud
         await _postRepo.UpdatePostAsync(post);
     }
 
-    public async Task DeletePostAsync(int postId)
+    public async Task<bool> DeletePostAsync(int postId, int userId)
     {
+        var post = await _postRepo.GetPostAsync(postId);
+        if (post == null || post.UserId != userId)
+        {
+            // Post not found or the user doesn't own the post
+            return false;
+        }
+
         await _postRepo.DeletePostAsync(postId);
+        return true;
     }
+
 
     public async Task<IEnumerable<Post>> GetPostsAsync()
     {

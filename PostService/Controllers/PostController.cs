@@ -1,9 +1,7 @@
 using Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PostApplication;
 using PostApplication.Interfaces;
-using System.Security.Claims;
 
 namespace PostService.Controllers;
 
@@ -52,7 +50,7 @@ public class PostController : ControllerBase
     {
        try
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst("UserId")?.Value;
             if (!int.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized("invalid token");
@@ -74,7 +72,7 @@ public class PostController : ControllerBase
     {
         try
         {
-            var userIdClaim = User.FindFirstValue("UserId");
+            var userIdClaim = User.FindFirst("UserId")?.Value;
             if (!int.TryParse(userIdClaim, out var userIdFromToken))
             {
                 return Unauthorized("UserId claim missing");
@@ -95,12 +93,25 @@ public class PostController : ControllerBase
 
     [HttpDelete]
     [Route("{postId}")]
+    [Authorize]
     public async Task<IActionResult> DeletePost([FromRoute] int postId)
     {
         try
         {
-            await _postCrud.DeletePostAsync(postId);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("invalid token");
+            }
+
+            var success = await _postCrud.DeletePostAsync(postId, userId);
+            if (!success)
+            {
+                return Forbid("You do not have permission to delete this post.");
+            }
+
             return Ok();
+
         }
         catch (Exception ex)
         {
