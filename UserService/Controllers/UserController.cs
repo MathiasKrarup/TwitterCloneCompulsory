@@ -64,6 +64,11 @@ public class UserController : ControllerBase
             return Forbid("You do not have permission to update this user");
         }
 
+        if (!await _userCrud.CheckIfUserExistsAsync(userIdFromToken))
+        {
+            return NotFound("User does not exist.");
+        }
+
         try
         {
             await _userCrud.UpdateUserAsync(id, updateUserDto);
@@ -88,6 +93,11 @@ public class UserController : ControllerBase
         if (!int.TryParse(userIdClaim, out var userIdFromToken))
         {
             return Unauthorized("Invalid token");
+        }
+
+        if (!await _userCrud.CheckIfUserExistsAsync(userIdFromToken))
+        {
+            return NotFound("User does not exist.");
         }
 
         var success = await _userCrud.DeleteUserAsync(id, userIdFromToken);

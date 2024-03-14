@@ -53,11 +53,6 @@ public class ValidationService : IValidationService
         return false;
     }
 
-    public async Task<bool> ValidateUserByTokenAsync(string token)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<string> GenerateTokenForLoginAsync(LoginDto loginDto)
     {
         var login = await _authRepo.GetUsersByUsernameAsync(loginDto.Username);
@@ -80,21 +75,9 @@ public class ValidationService : IValidationService
             {
             throw new KeyNotFoundException("User not found in UserService");
             }
-        
 
-        var jwtToken = GenerateJwtToken(login);
 
-        var token = new Token
-        {
-            Value = jwtToken,
-            TokenExpiryTime = DateTime.UtcNow.AddHours(3), 
-            IsActive = true,
-            UserId = login.UserId
-        };
-
-        await _authRepo.SaveTokenAsync(token);
-
-        return jwtToken;
+        return GenerateJwtToken(login);
     }
 
     private async Task<bool> VerifyUserExists(int userId)
@@ -159,11 +142,6 @@ public class ValidationService : IValidationService
         return true;
     }
 
-    public async Task<bool> UserHasActiveTokenAsync(int userId)
-    {
-        return await _authRepo.IsTokenActiveAsync(userId);
-    }
-
     public async Task<bool> DeleteLoginAsync(int userId)
     {
         try
@@ -173,20 +151,6 @@ public class ValidationService : IValidationService
         }
         catch
         {
-            return false;
-        }
-    }
-
-    public async Task<bool> DeleteTokensAsync(int userId)
-    {
-        try
-        {
-            await _authRepo.DeleteTokenAsync(userId);
-            return true;
-        }
-        catch
-        {
-           
             return false;
         }
     }
