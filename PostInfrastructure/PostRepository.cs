@@ -27,18 +27,9 @@ public class PostRepository : IPostRepository
         return await _context.Posts.FindAsync(postId);
     }
 
-    public async Task UpdatePostAsync(int postId, Post UpdatePost)
+    public async Task UpdatePostAsync(Post post)
     {
-
-        var postToUpdate = await _context.Posts.FirstOrDefaultAsync(p=> p.PostId == UpdatePost.PostId);
-
-        if(postId != UpdatePost.PostId)
-        {
-            throw new ArgumentException("The ids do not match");
-        }
-
-        postToUpdate.Content = UpdatePost.Content;
-        _context.Posts.Update(postToUpdate);
+        _context.Posts.Update(post);
         await _context.SaveChangesAsync();
     }
 
@@ -62,4 +53,5 @@ public class PostRepository : IPostRepository
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
     }
+
 }
