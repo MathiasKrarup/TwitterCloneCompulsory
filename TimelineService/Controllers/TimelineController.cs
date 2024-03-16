@@ -4,7 +4,7 @@ using TimelineApplication.Interfaces;
 namespace TimelineService.Controllers
 {
     [ApiController]
-    [Route("controller")]
+    [Route("[controller]")]
     public class TimelineController : ControllerBase
     {
         private readonly ITimelineService _timelineService;
@@ -45,13 +45,17 @@ namespace TimelineService.Controllers
             
         }
 
-        [HttpDelete]
+        [HttpDelete("{postId}")]
         public async Task<IActionResult> RemovePostFromTimeline(int postId)
         {
             try
             {
                 await _timelineService.RemovePostFromTimelineAsync(postId);
                 return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Post not found on the timeline");
             }
             catch (Exception ex)
             {

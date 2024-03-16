@@ -24,7 +24,13 @@ public class PostRepository : IPostRepository
 
     public async Task<Post> GetPostAsync(int postId)
     {
-        return await _context.Posts.FindAsync(postId);
+        var post = await _context.Posts.FirstOrDefaultAsync(p => p.PostId == postId);
+        if (post == null)
+        {
+            throw new KeyNotFoundException($"Post with Id {postId} was not found");
+        }
+
+        return post;
     }
 
     public async Task UpdatePostAsync(Post post)

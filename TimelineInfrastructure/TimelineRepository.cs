@@ -35,12 +35,14 @@ public class TimelineRepository : ITimelineRepo
 
     public async Task RemovePostFromTimelineAsync(int postId)
     {
-        var timelineEntry = await _context.Timelines
+        var post = await _context.Timelines
             .FirstOrDefaultAsync(t => t.PostId == postId);
-        if (timelineEntry != null)
+        if (post == null)
         {
-            _context.Timelines.Remove(timelineEntry);
-            await _context.SaveChangesAsync();
+            throw new KeyNotFoundException("Post not found on the timeline");
         }
+
+        _context.Timelines.Remove(post);
+        await _context.SaveChangesAsync();
     }
 }
