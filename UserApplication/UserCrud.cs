@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using Domain;
 using Domain.DTOs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using UserApplication.Interfaces;
 using UserInfrastructure.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 
 namespace UserApplication;
 
@@ -17,15 +20,18 @@ public class UserCrud : IUserCrud
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly string _authServiceUrl;
     private readonly string _postServiceUrl;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-    public UserCrud(IUserRepo userRepo, IMapper mapper, IHttpClientFactory httpClientFactory)
+
+    public UserCrud(IUserRepo userRepo, IMapper mapper, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
     {
         _userRepo = userRepo;
         _mapper = mapper;
-        _authServiceUrl = "http://authservice:80/Auth";
-        _postServiceUrl = "http://postservice:80/Post";
+        _authServiceUrl = "https://localhost:7227/Auth";
+        _postServiceUrl = "https://localhost:7222/Post";
         _httpClientFactory = httpClientFactory;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     private async Task<bool> DeleteLoginHttpRequest(int userId)
@@ -38,9 +44,15 @@ public class UserCrud : IUserCrud
     private async Task<bool> DeletePostHttpRequest(int postId, int userId)
     {
         var httpClient = _httpClientFactory.CreateClient();
+
+        var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
         var response = await httpClient.DeleteAsync($"{_postServiceUrl}/{postId}");
         return response.IsSuccessStatusCode;
     }
+
 
     private async Task<List<int>> GetUserPostsHttpRequest(int userId)
     {

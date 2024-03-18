@@ -14,7 +14,7 @@ namespace TimelineInfrastructure
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=Timeline-db,1435;Database=Timeline;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=localhost,1440;Database=Timeline;User Id=sa;Password=SuperSecret7!;Trusted_Connection=False;TrustServerCertificate=True;");
         }
 
 

@@ -28,7 +28,7 @@ public class ValidationService : IValidationService
     {
         _authRepo = authRepo;
         _mapper = mapper;
-        _userServiceUrl = "http://userservice:80/User";
+        _userServiceUrl = "https://localhost:7057/User";
         _httpClient = httpClientFactory.CreateClient();
         _configuration = configuration;
         _jwtKey = configuration["Jwt:Key"];
