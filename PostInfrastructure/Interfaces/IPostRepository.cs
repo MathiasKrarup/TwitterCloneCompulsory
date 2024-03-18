@@ -26,6 +26,13 @@ public interface IPostRepository
     Task<IEnumerable<Post>> GetPostsAsync();
 
     /// <summary>
+    /// Gets all posts associated 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<IEnumerable<Post>> GetPostsByUserAsync(int userId);
+
+    /// <summary>
     /// Updates a Post
     /// </summary>
     /// <param name="post"></param>

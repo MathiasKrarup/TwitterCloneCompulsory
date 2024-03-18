@@ -10,5 +10,6 @@ public interface IPostCrud
     Task UpdatePostAsync(int postId, PostDto postDto, int userId);
     Task<bool> DeletePostAsync(int postId, int userId);
     Task<IEnumerable<Post>> GetPostsAsync();
+    Task<IEnumerable<Post>> GetPostsByUserAsync(int userId);
     void Rebuild();
 }
