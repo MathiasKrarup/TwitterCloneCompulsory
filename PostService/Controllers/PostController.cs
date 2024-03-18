@@ -10,7 +10,6 @@ namespace PostService.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostCrud _postCrud;
-    private readonly HttpClient _client = new HttpClient();
 
     public PostController(IPostCrud postCrud)
     {
@@ -36,11 +35,20 @@ public class PostController : ControllerBase
     {
         try
         {
-            return Ok(await _postCrud.GetPostAsync(postId));
+            var post = await _postCrud.GetPostAsync(postId);
+            if (post == null)
+            {
+                return NotFound($"Post with ID {postId} was not found.");
+            }
+            return Ok(post);
         }
-        catch (Exception ex) 
+        catch (KeyNotFoundException ex)
         {
-            return BadRequest(ex.Message);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while processing the request.");
         }
     }
 

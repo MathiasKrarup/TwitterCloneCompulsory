@@ -1,4 +1,5 @@
-﻿using TimelineApplication.Interfaces;
+﻿using System.Net.Http;
+using TimelineApplication.Interfaces;
 using TimelineInfrastructure.Interfaces;
 
 namespace TimelineApplication;
@@ -6,14 +7,25 @@ namespace TimelineApplication;
 public class TimelineService : ITimelineService
 {
     private readonly ITimelineRepo _timelineRepo;
+    private readonly HttpClient _httpClientFactory;
+    private readonly string _postServiceUrl;
 
-    public TimelineService(ITimelineRepo timelineRepo)
+    public TimelineService(ITimelineRepo timelineRepo, IHttpClientFactory httpClientFactory)
     {
         _timelineRepo = timelineRepo;
+        _httpClientFactory = httpClientFactory.CreateClient();
+        _postServiceUrl = "http://postservice:80";
     }
 
     public async Task AddPostToTimelineAsync(int postId)
     {
+        var response = await _httpClientFactory.GetAsync($"{_postServiceUrl}/Post/{postId}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new KeyNotFoundException($"Post with the id {postId} was not found.");
+        }
+
         await _timelineRepo.AddPostToTimelineAsync(postId);
     }
 

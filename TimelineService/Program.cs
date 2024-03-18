@@ -10,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<TimelineDbContext>();
+builder.Services.AddHttpClient();
 
 
 TimelineApplication.DependencyResolver.DependencyResolverService.RegisterServices(builder.Services);
@@ -24,7 +25,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
