@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   Auth-db:
     image: mcr.microsoft.com/azure-sql-edge:latest
     environment:
@@ -87,6 +99,8 @@ services:
     depends_on:
       User-db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   postservice:
     build:
@@ -99,6 +113,8 @@ services:
       - Jwt:Key=6392f084ac5423fc2d833b164cba70c48cb24330
     depends_on:
       Post-db:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
 volumes:

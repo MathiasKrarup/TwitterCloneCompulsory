@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SharedMessage;
 using TimelineApplication.Interfaces;
 
 namespace TimelineService.Controllers
@@ -8,10 +9,12 @@ namespace TimelineService.Controllers
     public class TimelineController : ControllerBase
     {
         private readonly ITimelineService _timelineService;
+        private readonly MessageClient _messageClient;
 
-        public TimelineController(ITimelineService timelineService)
+        public TimelineController(ITimelineService timelineService, MessageClient messageClient)
         {
             _timelineService = timelineService;
+            _messageClient = messageClient;
         }
 
         [HttpPost]
@@ -20,6 +23,7 @@ namespace TimelineService.Controllers
             try
             {
                 await _timelineService.AddPostToTimelineAsync(postId);
+                _messageClient.Send<TimelineMessage>(new TimelineMessage { Message = "Post Added to Timeline!" }, "timeline-message");
                 return Ok(postId);
             }
             catch (Exception ex)
@@ -36,6 +40,8 @@ namespace TimelineService.Controllers
             try
             {
                 var postIds = await _timelineService.GetTimelinePostIdsAsync();
+                _messageClient.Send<TimelineMessage>(new TimelineMessage { Message = "Got All Posts From Timeline!" }, "timeline-message");
+
                 return Ok(postIds);
             }
             catch (Exception ex)
@@ -51,6 +57,8 @@ namespace TimelineService.Controllers
             try
             {
                 await _timelineService.RemovePostFromTimelineAsync(postId);
+                _messageClient.Send<TimelineMessage>(new TimelineMessage { Message = "Post Removed From Timeline!" }, "timeline-message");
+
                 return NoContent();
             }
             catch (KeyNotFoundException)
