@@ -20,6 +20,7 @@ public class UserCrud : IUserCrud
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly string _authServiceUrl;
     private readonly string _postServiceUrl;
+    private readonly string _timelineServiceUrl;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
 
@@ -30,6 +31,7 @@ public class UserCrud : IUserCrud
         _mapper = mapper;
         _authServiceUrl = "https://localhost:7227/Auth";
         _postServiceUrl = "https://localhost:7222/Post";
+        _timelineServiceUrl = "https://localhost:7094/Timeline";
         _httpClientFactory = httpClientFactory;
         _httpContextAccessor = httpContextAccessor;
     }
@@ -69,6 +71,13 @@ public class UserCrud : IUserCrud
         return postIds;
     }
 
+    private async Task<bool> RemovePostFromTimelineHttpRequest(int postId)
+    {
+        var httpClient = _httpClientFactory.CreateClient();
+        var response = await httpClient.DeleteAsync($"{_timelineServiceUrl}/{postId}");
+        return response.IsSuccessStatusCode;
+    }
+
     public async Task<User> AddUserAsync(UserDto userDto)
     {
         var user = _mapper.Map<User>(userDto);
@@ -78,16 +87,23 @@ public class UserCrud : IUserCrud
     public async Task<bool> DeleteUserAsync(int userId, int requesterUserId)
     {
         var user = await _userRepo.GetUserAsync(userId);
-        if (user == null)
+        if (user == null || userId != requesterUserId)
         {
             return false;
         }
 
-        var userPosts = await GetUserPostsHttpRequest(userId);
-        foreach (var postId in userPosts)
+        var userPostsIds = await GetUserPostsHttpRequest(userId);
+
+        foreach (var postId in userPostsIds)
         {
-            var succesPostDeletion = await DeletePostHttpRequest(postId, userId);
-            if (!succesPostDeletion)
+            var removedFromTimeline = await RemovePostFromTimelineHttpRequest(postId);
+            if (!removedFromTimeline)
+            {
+                return false;
+            }
+
+            var deletedPost = await DeletePostHttpRequest(postId, userId);
+            if (!deletedPost)
             {
                 return false;
             }
@@ -102,6 +118,7 @@ public class UserCrud : IUserCrud
         await _userRepo.DeleteUserAsync(userId);
         return true;
     }
+
 
 
     public async Task<User> GetUserAsync(int userId)

@@ -14,8 +14,8 @@ namespace TimelineService.Controllers
             _timelineService = timelineService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddPostToTimeline(int postId)
+        [HttpPost("{postId}")]
+        public async Task<IActionResult> AddPostToTimeline([FromRoute] int postId)
         {
             try
             {
