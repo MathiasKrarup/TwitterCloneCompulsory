@@ -29,9 +29,9 @@ public class UserCrud : IUserCrud
     {
         _userRepo = userRepo;
         _mapper = mapper;
-        _authServiceUrl = "https://localhost:7227/Auth";
-        _postServiceUrl = "https://localhost:7222/Post";
-        _timelineServiceUrl = "https://localhost:7094/Timeline";
+        _authServiceUrl = "http://authservice:80/Auth";
+        _postServiceUrl = "http://postservice:80/Post";
+        _timelineServiceUrl = "http://timelineservice:80/Timeline";
         _httpClientFactory = httpClientFactory;
         _httpContextAccessor = httpContextAccessor;
     }

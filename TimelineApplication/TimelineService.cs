@@ -14,7 +14,7 @@ public class TimelineService : ITimelineService
     {
         _timelineRepo = timelineRepo;
         _httpClientFactory = httpClientFactory.CreateClient();
-        _postServiceUrl = "https://localhost:7222";
+        _postServiceUrl = "http://postservice:80";
     }
 
     public async Task AddPostToTimelineAsync(int postId)
