@@ -49,6 +49,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddDbContext<UserDbContext>();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 
 UserApplication.DependencyResolver.DependencyResolverService.RegisterServices(builder.Services);
 UserInfrastructure.DependencyResolverService.DependencyResolverService.RegisterServices(builder.Services);

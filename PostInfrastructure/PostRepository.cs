@@ -60,4 +60,10 @@ public class PostRepository : IPostRepository
         _context.Database.EnsureCreated();
     }
 
+    public async Task<IEnumerable<Post>> GetPostsByUserAsync(int userId)
+    {
+        return await _context.Posts
+            .Where(p => p.UserId == userId)
+            .ToListAsync();
+    }
 }

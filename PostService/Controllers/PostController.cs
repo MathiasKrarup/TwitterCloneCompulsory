@@ -126,4 +126,19 @@ public class PostController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpGet]
+    [Route("GetByUserId/{userId}")]
+    public async Task <IActionResult> GetPostsByUser(int userId)
+    {
+        try
+        {
+            var posts = await _postCrud.GetPostsByUserAsync(userId);
+            return Ok(posts.Select(p => p.PostId));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

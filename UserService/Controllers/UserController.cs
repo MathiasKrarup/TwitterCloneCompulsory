@@ -97,7 +97,7 @@ public class UserController : ControllerBase
 
         if (!await _userCrud.CheckIfUserExistsAsync(userIdFromToken))
         {
-            return NotFound("User does not exist.");
+            return NotFound("No user id associated with the userId from the token was found in the database");
         }
 
         var success = await _userCrud.DeleteUserAsync(id, userIdFromToken);

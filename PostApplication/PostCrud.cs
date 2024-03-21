@@ -67,4 +67,9 @@ public class PostCrud : IPostCrud
     {
         _postRepo.Rebuild();
     }
+
+    public async Task<IEnumerable<Post>> GetPostsByUserAsync(int userId)
+    {
+        return await _postRepo.GetPostsByUserAsync(userId);
+    }
 }
