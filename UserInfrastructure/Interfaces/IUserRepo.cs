@@ -28,8 +28,7 @@ public interface IUserRepo
     /// <param name="userId"></param>
     /// <returns></returns>
     Task DeleteUserAsync(int userId);
-
-    Task<User> GetUserByEmailAsync(string email);
+    
 
     void Rebuild(); 
 }

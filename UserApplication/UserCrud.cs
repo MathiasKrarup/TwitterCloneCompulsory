@@ -143,13 +143,6 @@ public class UserCrud : IUserCrud
         
     }
 
-    public async Task<User> GetUserByEmail(string email)
-    {
-        return await _userRepo.GetUserByEmailAsync(email);
-    }
-
-
-
     public async Task<bool> CheckIfUserExistsAsync(int userId)
     {
         return await _userRepo.GetUserAsync(userId) != null;

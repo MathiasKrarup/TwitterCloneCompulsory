@@ -41,11 +41,6 @@ public class UserRepository : IUserRepo
         }
     }
 
-    public async Task<User> GetUserByEmailAsync(string email)
-    {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-    }
-
     public void Rebuild()
     {
         _context.Database.EnsureDeleted();

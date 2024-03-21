@@ -109,24 +109,4 @@ public class UserController : ControllerBase
 
         return NoContent();
     }
-
-    [HttpGet]
-    [Route("rebuild")]
-    public IActionResult Rebuild()
-    {
-        _userCrud.Rebuild();
-        return Ok();
-    }
-
-    [HttpGet("getByEmail/{email}")]
-    public async Task<ActionResult<User>> GetUserByEmail(string email)
-    {
-        var user = await _userCrud.GetUserByEmail(email);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        return user;
-    }
 }
