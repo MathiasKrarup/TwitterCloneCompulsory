@@ -94,7 +94,6 @@ services:
       dockerfile: PostService/Dockerfile
     ports:
       - "8110:80"
-      - "8111:8111"
     environment:
       - Jwt:Key=6392f084ac5423fc2d833b164cba70c48cb24330
     depends_on:
